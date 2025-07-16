@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ConversionCard from "@/components/ConversionCard";
-import { FileText, Hash, Type, File } from "lucide-react";
+import { FileText, Hash, Type, File, ArrowRightLeft } from "lucide-react";
 
 const Index = () => {
   return (
@@ -20,11 +20,11 @@ const Index = () => {
               </span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Trois outils puissants pour transformer vos documents en quelques clics
+              Quatre outils puissants pour transformer vos documents en quelques clics
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <ConversionCard
               title="Text → PDF"
               description="Convertissez du texte brut en document PDF professionnel"
@@ -50,6 +50,15 @@ const Index = () => {
               fromFormat="PDF"
               toFormat="TEXT"
               href="/pdf-to-text"
+            />
+            
+            <ConversionCard
+              title="PDF → Formats"
+              description="Convertissez vos PDF vers Word, Excel, PowerPoint ou JPEG"
+              icon={<ArrowRightLeft className="h-8 w-8 text-accent" />}
+              fromFormat="PDF"
+              toFormat="MULTI"
+              href="/pdf-to-formats"
             />
           </div>
         </div>
