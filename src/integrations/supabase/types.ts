@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversions: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          result_path: string | null
+          source_document_id: string | null
+          status: Database["public"]["Enums"]["conversion_status"]
+          target_format: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          result_path?: string | null
+          source_document_id?: string | null
+          status?: Database["public"]["Enums"]["conversion_status"]
+          target_format: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          result_path?: string | null
+          source_document_id?: string | null
+          status?: Database["public"]["Enums"]["conversion_status"]
+          target_format?: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversions_source_document_id_fkey"
+            columns: ["source_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          file_size: number
+          file_type: Database["public"]["Enums"]["document_type"]
+          filename: string
+          id: string
+          original_filename: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_size: number
+          file_type: Database["public"]["Enums"]["document_type"]
+          filename: string
+          id?: string
+          original_filename: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_size?: number
+          file_type?: Database["public"]["Enums"]["document_type"]
+          filename?: string
+          id?: string
+          original_filename?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +129,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      conversion_status: "pending" | "processing" | "completed" | "failed"
+      document_type:
+        | "pdf"
+        | "word"
+        | "excel"
+        | "powerpoint"
+        | "text"
+        | "markdown"
+        | "image"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +264,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      conversion_status: ["pending", "processing", "completed", "failed"],
+      document_type: [
+        "pdf",
+        "word",
+        "excel",
+        "powerpoint",
+        "text",
+        "markdown",
+        "image",
+      ],
+    },
   },
 } as const

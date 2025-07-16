@@ -30,7 +30,7 @@ const Hero = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Button variant="hero" size="lg" asChild>
-                <Link to="/text-to-pdf">
+                <Link to="/auth">
                   <Upload className="h-5 w-5" />
                   Commencer maintenant
                   <ArrowRight className="h-5 w-5" />
@@ -38,9 +38,9 @@ const Hero = () => {
               </Button>
               
               <Button variant="outline" size="lg" asChild>
-                <Link to="/markdown-to-pdf">
+                <Link to="/dashboard">
                   <FileText className="h-5 w-5" />
-                  Markdown → PDF
+                  Voir les fonctionnalités
                 </Link>
               </Button>
             </div>
