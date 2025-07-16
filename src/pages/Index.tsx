@@ -71,7 +71,7 @@ const Index = () => {
             <h2 className="text-4xl font-bold mb-6">
               Pourquoi choisir{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                ConvertPDF ?
+                PDF-kit ?
               </span>
             </h2>
           </div>
