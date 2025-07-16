@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Download, FileText, Hash, ArrowRight } from "lucide-react";
+import { Download, FileText, Hash, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Header from "@/components/Header";
 import jsPDF from "jspdf";
 import { marked } from "marked";
@@ -12,7 +12,21 @@ import { useToast } from "@/hooks/use-toast";
 const MarkdownToPdf = () => {
   const [markdown, setMarkdown] = useState("");
   const [isConverting, setIsConverting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    const updatePreview = async () => {
+      if (markdown) {
+        const html = await marked(markdown);
+        setPreviewHtml(html);
+      } else {
+        setPreviewHtml('<p class="text-muted-foreground">Votre contenu apparaîtra ici...</p>');
+      }
+    };
+    updatePreview();
+  }, [markdown]);
 
   const handleConvertToPdf = async () => {
     if (!markdown.trim()) {
@@ -101,25 +115,62 @@ const MarkdownToPdf = () => {
 
         <Card className="shadow-xl border-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Hash className="h-5 w-5" />
-              Saisissez votre Markdown
-            </CardTitle>
-            <CardDescription>
-              Utilisez la syntaxe Markdown pour formater votre contenu
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="h-5 w-5" />
+                  Saisissez votre Markdown
+                </CardTitle>
+                <CardDescription>
+                  Utilisez la syntaxe Markdown pour formater votre contenu
+                </CardDescription>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+                disabled={!markdown.trim()}
+              >
+                {showPreview ? (
+                  <>
+                    <EyeOff className="h-4 w-4" />
+                    Masquer
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4" />
+                    Prévisualiser
+                  </>
+                )}
+              </Button>
+            </div>
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="markdown-input">Contenu Markdown</Label>
-              <Textarea
-                id="markdown-input"
-                placeholder="# Mon titre&#10;&#10;**Texte en gras** et *texte en italique*&#10;&#10;- Liste à puces&#10;- Autre élément&#10;&#10;## Sous-titre&#10;&#10;Du texte normal avec un [lien](https://example.com)..."
-                value={markdown}
-                onChange={(e) => setMarkdown(e.target.value)}
-                className="min-h-[300px] resize-none font-mono text-sm"
-              />
+            <div className={`grid gap-6 ${showPreview ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+              <div className="space-y-2">
+                <Label htmlFor="markdown-input">Contenu Markdown</Label>
+                <Textarea
+                  id="markdown-input"
+                  placeholder="# Mon titre&#10;&#10;**Texte en gras** et *texte en italique*&#10;&#10;- Liste à puces&#10;- Autre élément&#10;&#10;## Sous-titre&#10;&#10;Du texte normal avec un [lien](https://example.com)..."
+                  value={markdown}
+                  onChange={(e) => setMarkdown(e.target.value)}
+                  className="min-h-[300px] resize-none font-mono text-sm"
+                />
+              </div>
+              
+              {showPreview && (
+                <div className="space-y-2">
+                  <Label>Prévisualisation</Label>
+                  <div 
+                    className="min-h-[300px] p-4 border rounded-lg bg-background overflow-auto prose prose-sm dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ 
+                      __html: previewHtml 
+                    }}
+                  />
+                </div>
+              )}
             </div>
             
             <div className="flex justify-between items-center">
