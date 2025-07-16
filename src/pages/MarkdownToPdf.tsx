@@ -5,8 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Download, FileText, Hash, ArrowRight, Eye, EyeOff, Bold, Italic, List, Heading, Link, Image, Code, Quote, Settings, File, Maximize } from "lucide-react";
+import { Download, FileText, Hash, ArrowRight, Eye, EyeOff, Bold, Italic, List, Heading, Link, Image, Code, Quote, Settings, File, Maximize, Palette } from "lucide-react";
 import Header from "@/components/Header";
+import MarkdownPreview from "@/components/MarkdownPreview";
 import jsPDF from "jspdf";
 import { marked } from "marked";
 import { useToast } from "@/hooks/use-toast";
@@ -273,12 +274,19 @@ const MarkdownToPdf = () => {
           
           <CardContent className="space-y-6">
             {/* Barre d'outils */}
-            <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
+            <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-muted/20 to-muted/40 rounded-xl border border-border/50 backdrop-blur-sm animate-fade-in">
+              <div className="flex items-center gap-2 px-3 py-1 bg-background/50 rounded-lg border border-border/30">
+                <Palette className="h-3 w-3 text-primary" />
+                <span className="text-xs font-medium text-muted-foreground">Formatage</span>
+              </div>
+              <Separator orientation="vertical" className="h-8 mx-1" />
+              
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => insertMarkdown('**', '**')}
                 title="Gras (Ctrl+B)"
+                className="hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105"
               >
                 <Bold className="h-4 w-4" />
               </Button>
@@ -287,6 +295,7 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('*', '*')}
                 title="Italique (Ctrl+I)"
+                className="hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105"
               >
                 <Italic className="h-4 w-4" />
               </Button>
@@ -295,15 +304,25 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('# ', '')}
                 title="Titre"
+                className="hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105"
               >
                 <Heading className="h-4 w-4" />
               </Button>
-              <Separator orientation="vertical" className="h-8" />
+              
+              <Separator orientation="vertical" className="h-8 mx-1" />
+              
+              <div className="flex items-center gap-2 px-3 py-1 bg-background/50 rounded-lg border border-border/30">
+                <List className="h-3 w-3 text-accent" />
+                <span className="text-xs font-medium text-muted-foreground">Structure</span>
+              </div>
+              <Separator orientation="vertical" className="h-8 mx-1" />
+              
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => insertMarkdown('- ', '')}
                 title="Liste à puces"
+                className="hover:bg-accent/10 hover:text-accent transition-all duration-200 hover:scale-105"
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -312,6 +331,7 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('[', '](url)')}
                 title="Lien (Ctrl+K)"
+                className="hover:bg-accent/10 hover:text-accent transition-all duration-200 hover:scale-105"
               >
                 <Link className="h-4 w-4" />
               </Button>
@@ -320,6 +340,7 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('![alt](', ')')}
                 title="Image"
+                className="hover:bg-accent/10 hover:text-accent transition-all duration-200 hover:scale-105"
               >
                 <Image className="h-4 w-4" />
               </Button>
@@ -328,6 +349,7 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('`', '`')}
                 title="Code (Ctrl+Shift+C)"
+                className="hover:bg-accent/10 hover:text-accent transition-all duration-200 hover:scale-105"
               >
                 <Code className="h-4 w-4" />
               </Button>
@@ -336,50 +358,83 @@ const MarkdownToPdf = () => {
                 size="sm"
                 onClick={() => insertMarkdown('> ', '')}
                 title="Citation"
+                className="hover:bg-accent/10 hover:text-accent transition-all duration-200 hover:scale-105"
               >
                 <Quote className="h-4 w-4" />
               </Button>
             </div>
 
-            <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
-              <div className="space-y-2">
-                <Label htmlFor="markdown-input">Contenu Markdown</Label>
-                <Textarea
-                  ref={textareaRef}
-                  id="markdown-input"
-                  placeholder="# Votre titre ici&#10;&#10;Commencez à écrire ou choisissez un template..."
-                  value={markdown}
-                  onChange={(e) => setMarkdown(e.target.value)}
-                  className={`resize-none font-mono text-sm ${isFullscreen ? 'min-h-[60vh]' : 'min-h-[400px]'}`}
-                />
+            <div className={`grid gap-6 transition-all duration-300 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+              <div className="space-y-2 animate-fade-in">
+                <Label htmlFor="markdown-input" className="flex items-center gap-2 font-medium">
+                  <Hash className="h-4 w-4 text-primary" />
+                  Contenu Markdown
+                </Label>
+                <div className="relative">
+                  <Textarea
+                    ref={textareaRef}
+                    id="markdown-input"
+                    placeholder="# Votre titre ici&#10;&#10;Commencez à écrire ou choisissez un template...&#10;&#10;**Astuce :** Utilisez les raccourcis clavier pour un formatage rapide !"
+                    value={markdown}
+                    onChange={(e) => setMarkdown(e.target.value)}
+                    className={`
+                      resize-none font-mono text-sm 
+                      border-2 border-border/50 
+                      focus:border-primary/50 
+                      transition-all duration-300
+                      backdrop-blur-sm
+                      ${isFullscreen ? 'min-h-[60vh]' : 'min-h-[400px]'}
+                    `}
+                  />
+                  {markdown.length === 0 && (
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                      <div className="text-center text-muted-foreground/50 animate-pulse">
+                        <Hash className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-sm">Commencez à taper ou choisissez un template</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               
               {showPreview && (
-                <div className="space-y-2">
+                <div className="space-y-2 animate-slide-up">
                   <Label>Prévisualisation en temps réel</Label>
-                  <div 
-                    className={`p-4 border rounded-lg bg-background overflow-auto prose prose-sm dark:prose-invert max-w-none ${isFullscreen ? 'min-h-[60vh]' : 'min-h-[400px]'}`}
-                    dangerouslySetInnerHTML={{ 
-                      __html: previewHtml 
-                    }}
+                  <MarkdownPreview 
+                    markdown={markdown}
+                    isFullscreen={isFullscreen}
+                    className="border-2 border-primary/20 shadow-lg"
                   />
                 </div>
               )}
             </div>
             
             {/* Statistiques et actions */}
-            <div className="flex flex-wrap justify-between items-center gap-4 p-4 bg-muted/30 rounded-lg">
-              <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-                <span>{markdown.length} caractères</span>
-                <span>{getWordCount()} mots</span>
-                <span>{getLineCount()} lignes</span>
+            <div className="flex flex-wrap justify-between items-center gap-4 p-4 bg-gradient-to-r from-secondary/20 to-secondary/40 rounded-xl border border-border/50 backdrop-blur-sm">
+              <div className="flex flex-wrap gap-6 text-sm">
+                <div className="flex items-center gap-2 px-3 py-1 bg-background/50 rounded-lg border border-border/30">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <span className="font-medium">{markdown.length}</span>
+                  <span className="text-muted-foreground">caractères</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-background/50 rounded-lg border border-border/30">
+                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                  <span className="font-medium">{getWordCount()}</span>
+                  <span className="text-muted-foreground">mots</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-background/50 rounded-lg border border-border/30">
+                  <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+                  <span className="font-medium">{getLineCount()}</span>
+                  <span className="text-muted-foreground">lignes</span>
+                </div>
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Button 
                   variant="outline"
                   onClick={() => setMarkdown('')}
                   disabled={!markdown.trim()}
+                  className="transition-all duration-200 hover:scale-105 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
                 >
                   Effacer
                 </Button>
@@ -388,9 +443,13 @@ const MarkdownToPdf = () => {
                   disabled={!markdown.trim() || isConverting}
                   variant="gradient"
                   size="lg"
+                  className="transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   {isConverting ? (
-                    "Conversion en cours..."
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin"></div>
+                      Conversion en cours...
+                    </div>
                   ) : (
                     <>
                       <Download className="h-4 w-4" />
@@ -404,42 +463,72 @@ const MarkdownToPdf = () => {
         </Card>
 
         {/* Aide et raccourcis */}
-        <div className="grid md:grid-cols-2 gap-6 mt-8">
+        <div className="grid md:grid-cols-2 gap-6 mt-8 animate-fade-in">
           {/* Aide syntaxe */}
-          <Card className="bg-secondary/30">
+          <Card className="bg-gradient-to-br from-secondary/20 to-secondary/40 border-2 border-border/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>
-              <CardTitle className="text-lg">Syntaxe Markdown</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Hash className="h-5 w-5 text-primary" />
+                Syntaxe Markdown
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 text-sm">
+              <div className="space-y-4 text-sm">
                 <div>
-                  <p className="font-medium mb-2">Formatage :</p>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li><code className="bg-muted px-1 rounded"># Titre</code> - Titre principal</li>
-                    <li><code className="bg-muted px-1 rounded">**gras**</code> - Texte en gras</li>
-                    <li><code className="bg-muted px-1 rounded">*italique*</code> - Texte en italique</li>
-                    <li><code className="bg-muted px-1 rounded">`code`</code> - Code inline</li>
-                  </ul>
+                  <p className="font-semibold mb-3 text-foreground">Formatage :</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <code className="bg-muted px-2 py-1 rounded font-mono text-primary"># Titre</code>
+                      <span className="text-muted-foreground">Titre principal</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <code className="bg-muted px-2 py-1 rounded font-mono text-primary">**gras**</code>
+                      <span className="text-muted-foreground">Texte en gras</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <code className="bg-muted px-2 py-1 rounded font-mono text-primary">*italique*</code>
+                      <span className="text-muted-foreground">Texte en italique</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <code className="bg-muted px-2 py-1 rounded font-mono text-primary">`code`</code>
+                      <span className="text-muted-foreground">Code inline</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Raccourcis clavier */}
-          <Card className="bg-secondary/30">
+          <Card className="bg-gradient-to-br from-accent/20 to-accent/40 border-2 border-border/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>
-              <CardTitle className="text-lg">Raccourcis clavier</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Settings className="h-5 w-5 text-accent" />
+                Raccourcis clavier
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 text-sm">
+              <div className="space-y-4 text-sm">
                 <div>
-                  <p className="font-medium mb-2">Édition :</p>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li><kbd className="bg-muted px-1 rounded">Ctrl+B</kbd> - Texte en gras</li>
-                    <li><kbd className="bg-muted px-1 rounded">Ctrl+I</kbd> - Texte en italique</li>
-                    <li><kbd className="bg-muted px-1 rounded">Ctrl+K</kbd> - Insérer un lien</li>
-                    <li><kbd className="bg-muted px-1 rounded">Ctrl+Entrée</kbd> - Convertir en PDF</li>
-                  </ul>
+                  <p className="font-semibold mb-3 text-foreground">Édition rapide :</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <kbd className="bg-muted px-2 py-1 rounded font-mono text-accent">Ctrl+B</kbd>
+                      <span className="text-muted-foreground">Texte en gras</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <kbd className="bg-muted px-2 py-1 rounded font-mono text-accent">Ctrl+I</kbd>
+                      <span className="text-muted-foreground">Texte en italique</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <kbd className="bg-muted px-2 py-1 rounded font-mono text-accent">Ctrl+K</kbd>
+                      <span className="text-muted-foreground">Insérer un lien</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg border border-border/30">
+                      <kbd className="bg-muted px-2 py-1 rounded font-mono text-accent">Ctrl+Entrée</kbd>
+                      <span className="text-muted-foreground">Convertir en PDF</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
